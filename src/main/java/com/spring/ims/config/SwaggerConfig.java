@@ -24,7 +24,7 @@ public class SwaggerConfig{
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     private ApiInfo apiInfo() {
-        return new ApiInfo("MyApp Rest APIs",
+        return new ApiInfo("Issue Management Rest APIs",
                 "APIs for MyApp.",
                 "1.0",
                 "Terms of service",
