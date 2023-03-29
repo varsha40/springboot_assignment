@@ -19,7 +19,6 @@ import com.spring.ims.repository.UserRepository;
 import com.spring.ims.security.jwt.JwtUtils;
 import com.spring.ims.security.services.AuthenticationService;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
