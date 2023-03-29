@@ -25,11 +25,22 @@ public class GlobalExceptionHandler {
 	  @ExceptionHandler(InvalidInputException.class)
 	  public ResponseEntity<ErrorMessage> globalExceptionHandler(Exception ex, WebRequest request) {
 	    ErrorMessage message = new ErrorMessage(
-	        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+	        HttpStatus.BAD_REQUEST.value(),
 	        new Date(),
 	        ex.getMessage(),
 	        request.getDescription(false));
 	    
-	    return new ResponseEntity<ErrorMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+	    return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
+	  }
+
+	  @ExceptionHandler({EmailAlreadyExistsException.class, UserNameAlreadyExistsException.class})
+	  public ResponseEntity<ErrorMessage> EmailOrUsernameAlreadyExistsException(Exception ex, WebRequest request) {
+	    ErrorMessage message = new ErrorMessage(
+	        HttpStatus.BAD_REQUEST.value(),
+	        new Date(),
+	        ex.getMessage(),
+	        request.getDescription(false));
+	    
+	    return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
 	  }
 }

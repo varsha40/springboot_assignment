@@ -2,6 +2,9 @@ package com.spring.ims.payload.request;
 
 import javax.validation.constraints.NotBlank;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class LoginRequest {
 	@NotBlank
   private String username;

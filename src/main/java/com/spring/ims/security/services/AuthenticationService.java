@@ -8,23 +8,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.spring.ims.IConstants.IConstants;
+import com.spring.ims.exception.EmailAlreadyExistsException;
+import com.spring.ims.exception.UserNameAlreadyExistsException;
 import com.spring.ims.models.ERole;
 import com.spring.ims.models.Role;
 import com.spring.ims.models.User;
 import com.spring.ims.payload.request.LoginRequest;
 import com.spring.ims.payload.request.SignupRequest;
-import com.spring.ims.payload.response.JwtResponse;
-import com.spring.ims.payload.response.MessageResponse;
 import com.spring.ims.repository.RoleRepository;
 import com.spring.ims.repository.UserRepository;
 import com.spring.ims.security.jwt.JwtUtils;
@@ -91,16 +89,18 @@ public class AuthenticationService {
 	 * 
 	 * @return {@link ResponseEntity<?> }
 	 */
-	public ResponseEntity<?> registerUser(SignupRequest signupRequest) {
+	public User registerUser(SignupRequest signupRequest) {
 		
 		// Checks if username already exists
 		if (userRepository.existsByUsername(signupRequest.getUsername())) {
-			return ResponseEntity.badRequest().body(new MessageResponse(IConstants.USERNAME_ALREADY_EXISTS));
+
+			throw new UserNameAlreadyExistsException(IConstants.USERNAME_ALREADY_EXISTS);
 		}
 		
 		// Checks if email already exists
 		if (userRepository.existsByEmail(signupRequest.getEmail())) {
-			return ResponseEntity.badRequest().body(new MessageResponse(IConstants.EMAIL_ALREADY_EXISTS));
+
+			throw new EmailAlreadyExistsException(IConstants.EMAIL_ALREADY_EXISTS);
 		}
 
 		// Create new user's account
@@ -144,8 +144,7 @@ public class AuthenticationService {
 		user.setRoles(roles);
 		
 		// Saves the new user data in DB
-		userRepository.save(user);
-		
-		return ResponseEntity.ok(new MessageResponse(IConstants.USER_REGISTERED_SUCCESSFULLY));
+		return userRepository.save(user);
+	
 	}
 }

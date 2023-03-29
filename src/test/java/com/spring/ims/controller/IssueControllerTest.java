@@ -11,9 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,14 +27,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.spring.ims.controllers.IssueController;
 import com.spring.ims.dto.IssueDto;
 import com.spring.ims.enums.Severity;
-import com.spring.ims.models.ERole;
 import com.spring.ims.models.Issue;
-import com.spring.ims.models.Role;
 import com.spring.ims.models.User;
 import com.spring.ims.services.IssueService;
 
@@ -62,9 +59,8 @@ public class IssueControllerTest {
 	}
     
     @Test
-    @WithMockUser(username = "varsha20", roles = {"MODERATOR","USER"})
     public void testAddIssueEndpointWithModeratorRole() throws Exception {
-        // Create the issue to add
+        // Creating the issueDto to add
         IssueDto issueDto = new IssueDto();
         issueDto.setTitle("Test Issue");
         issueDto.setDescription("This is a test issue");
@@ -74,12 +70,12 @@ public class IssueControllerTest {
         
         Issue issue = getIssueData();
         
-        // Convert the issue to JSON format
+        // Converting the issue to JSON format
         String json = new ObjectMapper().writeValueAsString(issueDto);
         
         when(issueService.addIssue(any(IssueDto.class))).thenReturn(issue);
 
-        // Perform the POST request with the custom user
+        // Performing the POST request with the custom user
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/issue/")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(json)
@@ -88,7 +84,7 @@ public class IssueControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Check the response body
+        // Checking the response body
         String responseBody = mvcResult.getResponse().getContentAsString();
         Issue addedIssue = new ObjectMapper().readValue(responseBody, Issue.class);
         assertNotNull(addedIssue);
@@ -121,7 +117,7 @@ public class IssueControllerTest {
         
         when(issueService.updateIssue(any(Long.class), any(IssueDto.class))).thenReturn(updatedIssue);
         
-        // Convert the issue to JSON format
+        // Converting the issue to JSON format
         String json = new ObjectMapper().writeValueAsString(issueDto);
         
         when(issueService.updateIssue(any(Long.class), any(IssueDto.class))).thenReturn(updatedIssue);
@@ -135,7 +131,7 @@ public class IssueControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Check the response body
+        // Checking the response body
         String responseBody = mvcResult.getResponse().getContentAsString();
         Issue updatedIssueResult = new ObjectMapper().readValue(responseBody, Issue.class);
         assertNotNull(updatedIssueResult);
@@ -154,7 +150,7 @@ public class IssueControllerTest {
          // Mock the service method call
          when(issueService.getIssueById(any(Long.class))).thenReturn(issue);
          
-         // Perform the POST request with the custom user
+         // Performing the POST request with the custom user
          MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/issue/{issueId}", 1L)
                  .contentType(MediaType.APPLICATION_JSON_VALUE)
                  .with(csrf())
@@ -197,7 +193,7 @@ public class IssueControllerTest {
          // Mock the service method call
          when(issueService.getAllIssues()).thenReturn(issues);
          
-         // Perform the POST request with the custom user
+         // Performing the POST request with the custom user
          MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/issue/")
                  .contentType(MediaType.APPLICATION_JSON_VALUE)
                  .with(csrf())
@@ -207,7 +203,7 @@ public class IssueControllerTest {
          
          // Check the response body
          String responseBody = mvcResult.getResponse().getContentAsString();
-         List<Issue> issueResult = new ObjectMapper().readValue(responseBody, List.class);
+         List<Issue> issueResult = new ObjectMapper().readValue(responseBody, new TypeReference<List<Issue>>() {});
          assertEquals(issues.size(), issueResult.size());
     }
     
@@ -220,7 +216,7 @@ public class IssueControllerTest {
         // Mock the service method call
         doNothing().when(issueService).deleteIssueById(issueId);
 
-        // Make a DELETE request to the api/issue/{issueId} endpoint
+        // Making a DELETE request to the api/issue/{issueId} endpoint
         mockMvc.perform(delete("/api/issue/{issueId}", issueId)
         		  .contentType(MediaType.APPLICATION_JSON_VALUE)
                   .with(csrf())
