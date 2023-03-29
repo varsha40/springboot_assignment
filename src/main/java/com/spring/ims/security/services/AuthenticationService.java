@@ -1,7 +1,9 @@
 package com.spring.ims.security.services;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,7 +54,7 @@ public class AuthenticationService {
 	 * 
 	 * @return {@link  ResponseEntity<?>}
 	 */
-	public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) {
+	public Map<String, Object> authenticateUser(LoginRequest loginRequest) {
 		
 		// Calls internally the authentication provider to authenticate the request
 		Authentication authentication = authenticationManager.authenticate(
@@ -69,9 +72,15 @@ public class AuthenticationService {
 		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 		
-		// Returns user details with the generated JWT token
-		return ResponseEntity.ok(
-				new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+		// Set values to map
+		Map<String, Object> map = new HashMap<>();
+		map.put("jwt", jwt);
+		map.put("id", userDetails.getId());
+		map.put("name", userDetails.getUsername());
+		map.put("email", userDetails.getEmail());
+		map.put("roles", roles);
+
+		return map;
 
 	}
 	
