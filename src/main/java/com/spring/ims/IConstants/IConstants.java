@@ -12,4 +12,6 @@ public class IConstants {
 	public static final String ROLE_NOT_FOUND = "Role not found";
 	public static final String USER_REGISTERED_SUCCESSFULLY = "User registered successfully!";
     public static final String USER_NOT_FOUND = "User not found";
+	public static final String USERNAME_ALREADY_EXISTS = "Error: Username is already taken!";
+	public static final String EMAIL_ALREADY_EXISTS = "Error: Email is already in use!";
 }

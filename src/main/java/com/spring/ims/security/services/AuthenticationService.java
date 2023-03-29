@@ -95,12 +95,12 @@ public class AuthenticationService {
 		
 		// Checks if username already exists
 		if (userRepository.existsByUsername(signupRequest.getUsername())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+			return ResponseEntity.badRequest().body(new MessageResponse(IConstants.USERNAME_ALREADY_EXISTS));
 		}
 		
 		// Checks if email already exists
 		if (userRepository.existsByEmail(signupRequest.getEmail())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+			return ResponseEntity.badRequest().body(new MessageResponse(IConstants.EMAIL_ALREADY_EXISTS));
 		}
 
 		// Create new user's account
@@ -135,7 +135,7 @@ public class AuthenticationService {
 					break;
 				default:
 					Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+							.orElseThrow(() -> new RuntimeException(IConstants.ROLE_NOT_FOUND));
 					roles.add(userRole);
 				}
 			});
