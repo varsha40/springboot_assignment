@@ -72,13 +72,7 @@ public class IssueControllerTest {
         issueDto.setStatus("Open");
 
         
-        Issue issue = new Issue();
-        issue.setId(1L);
-        issue.setTitle("Test Issue");
-        issue.setDescription("This is a test issue");
-        issue.setResponsible("Test User");
-        issue.setStatus("Open");
-        issue.setSeverity(Severity.LOW);
+        Issue issue = getIssueData();
         
         // Convert the issue to JSON format
         String json = new ObjectMapper().writeValueAsString(issueDto);
@@ -155,13 +149,7 @@ public class IssueControllerTest {
     @WithMockUser(username = "varsha20", roles = {"MODERATOR","USER","ADMIN"})
     public void getIssueByIdTest() throws Exception {
     	
-    	 Issue issue = new Issue();
-         issue.setId(1L);
-         issue.setTitle("Test Issue");
-         issue.setDescription("This is a test issue");
-         issue.setResponsible("Test User");
-         issue.setStatus("Open");
-         issue.setSeverity(Severity.LOW);
+    	 Issue issue = getIssueData();
          
          // Mock the service method call
          when(issueService.getIssueById(any(Long.class))).thenReturn(issue);
@@ -173,6 +161,7 @@ public class IssueControllerTest {
                  .with(user("varsha20").roles("MODERATOR","USER","ADMIN")))
                  .andExpect(status().isOk())
                  .andReturn();
+                 
          // Check the response body
          String responseBody = mvcResult.getResponse().getContentAsString();
          Issue issueResult = new ObjectMapper().readValue(responseBody, Issue.class);
@@ -238,6 +227,18 @@ public class IssueControllerTest {
                   .with(user("varsha20").roles("ADMIN")))
                   .andExpect(status().isOk())
                   .andReturn();
+    }
+
+    private Issue getIssueData(){
+
+        Issue issue = new Issue();
+        issue.setId(1L);
+        issue.setTitle("Test Issue");
+        issue.setDescription("This is a test issue");
+        issue.setResponsible("Test User");
+        issue.setStatus("Open");
+        issue.setSeverity(Severity.LOW);
+        return issue;
     }
 
 }

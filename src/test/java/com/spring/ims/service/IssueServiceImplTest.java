@@ -63,38 +63,20 @@ public class IssueServiceImplTest {
         issueDto.setResponsible("testUser");
         issueDto.setStatus("Open");
         
-        Issue issue = new Issue();
-        issue.setId(1L);
-        issue.setTitle("Test Issue");
-        issue.setDescription("This is a test issue");
-        issue.setSeverity(Severity.LOW);
-        issue.setResponsible("testUser");
-        
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("testUser");
-        user.setEmail("varshac.bbs@gmail.com");
-        
-        Role role = new Role();
-        role.setId(1);
-        role.setName(ERole.ROLE_USER);
-        Set<Role> set = new HashSet<> ();
-        set.add(role);
-        user.setRoles(set);
-        
-        issue.setUser(user);
+        // Fetching issue Data
+        Issue issue = getIssue();
        
-
-        when(authentication.getPrincipal()).thenReturn(new UserDetailsImpl().build(user));
+        when(authentication.getPrincipal()).thenReturn(new UserDetailsImpl().build(issue.getUser()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        when(userRepository.findByUsername(any(String.class))).thenReturn(Optional.of(user));
+        // Calling repositories methods
+        when(userRepository.findByUsername(any(String.class))).thenReturn(Optional.of(issue.getUser()));
         when(issueRepository.save(any(Issue.class))).thenReturn(issue);
         
-        // When
+        // Calling the main method to test
         issue = issueService.addIssue(issueDto);
 
-        // Then
+       
         Assertions.assertNotNull(issue);
         assertEquals("Test Issue", issue.getTitle());
     }
@@ -109,25 +91,7 @@ public class IssueServiceImplTest {
         issueDto.setStatus("Closed");
         issueDto.setSeverity("Major");
         
-        Issue issue = new Issue();
-        issue.setId(1L);
-        issue.setTitle("Test Issue");
-        issue.setDescription("This is a test issue");
-        issue.setSeverity(Severity.LOW);
-        issue.setResponsible("Developer");
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("testUser");
-        user.setEmail("varshac.bbs@gmail.com");
-        
-        Role role = new Role();
-        role.setId(1);
-        role.setName(ERole.ROLE_USER);
-        Set<Role> set = new HashSet<> ();
-        set.add(role);
-        user.setRoles(set);
-        
-        issue.setUser(user);
+        Issue issue = getIssue();
         
         Issue updatedIssue = new Issue();
         updatedIssue.setTitle(issueDto.getTitle());
@@ -137,14 +101,15 @@ public class IssueServiceImplTest {
         updatedIssue.setSeverity(issue.getSeverity());
         updatedIssue.setUser(issue.getUser());
         
+        // Calling repositories methods
         when(issueRepository.findById(any(Long.class))).thenReturn(Optional.of(issue));
     
         when(issueRepository.save(any(Issue.class))).thenReturn(updatedIssue);
         
-        // When
+        // Calling the main method to test
         Issue updatedIssueInfo = issueService.updateIssue(1L, issueDto);
 
-        // Then
+        // Checking test result
         Assertions.assertNotNull(updatedIssueInfo);
         assertEquals(issueDto.getTitle(), updatedIssueInfo.getTitle());
     }
@@ -153,7 +118,7 @@ public class IssueServiceImplTest {
         // Given
         IssueDto issueDto = null;
 
-        // When and Then
+        // Throws Exception 
         Assertions.assertThrows(InvalidInputException.class, () -> {
             issueService.addIssue(issueDto);
         });
@@ -167,7 +132,7 @@ public class IssueServiceImplTest {
         issueDto.setResponsible("testUser");
         issueDto.setStatus("Open");
 
-        // When and Then
+        // Throws Exception 
         Assertions.assertThrows(InvalidInputException.class, () -> {
             issueService.addIssue(issueDto);
         });
@@ -181,7 +146,7 @@ public class IssueServiceImplTest {
         issueDto.setResponsible("testUser");
         issueDto.setStatus("Open");
 
-        // When and Then
+        // Throws Exception 
         Assertions.assertThrows(InvalidInputException.class, () -> {
             issueService.addIssue(issueDto);
         });
@@ -195,7 +160,7 @@ public class IssueServiceImplTest {
         issueDto.setDescription("This is a test issue");
         issueDto.setResponsible("testUser");
 
-        // When and Then
+        // Throws Exception 
         Assertions.assertThrows(InvalidInputException.class, () -> {
             issueService.addIssue(issueDto);
         });
@@ -209,7 +174,7 @@ public class IssueServiceImplTest {
         issueDto.setDescription("This is a test issue");
         issueDto.setStatus("Open");
 
-        // When and Then
+        // Throws Exception 
         Assertions.assertThrows(InvalidInputException.class, () -> {
             issueService.addIssue(issueDto);
         });
@@ -263,8 +228,10 @@ public class IssueServiceImplTest {
          issues.add(issue1);
          issues.add(issue2);
          
+         // Calling repository method
          when(issueRepository.findAll()).thenReturn(issues);
          
+          // Calling main method
          List<Issue> issuesList = issueService.getAllIssues();
          assertEquals(issues.size(), issuesList.size());
     	
@@ -273,26 +240,9 @@ public class IssueServiceImplTest {
     @Test
     public void getIssueByIdTest() throws ResourceNotFoundException{
     	
-    	Issue issue = new Issue();
-        issue.setId(1L);
-        issue.setTitle("Test Issue");
-        issue.setDescription("This is a test issue");
-        issue.setSeverity(Severity.LOW);
-        issue.setResponsible("Developer");
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("testUser");
-        user.setEmail("varshac.bbs@gmail.com");
-        
-        Role role = new Role();
-        role.setId(1);
-        role.setName(ERole.ROLE_USER);
-        Set<Role> set = new HashSet<> ();
-        set.add(role);
-        user.setRoles(set);
-        
-        issue.setUser(user);
-        
+    	
+        Issue issue = getIssue();
+
         // Success case
         when(issueRepository.findById(any(Long.class))).thenReturn(Optional.of(issue));
         
@@ -303,7 +253,7 @@ public class IssueServiceImplTest {
         // Failure case
         when(issueRepository.findById(any(Long.class))).thenReturn(Optional.empty());
         
-        // When and Then
+        // Throws exception on fail
         Assertions.assertThrows(ResourceNotFoundException.class, () -> {
         	issueService.getIssueById(1L);
         });
@@ -329,9 +279,35 @@ public class IssueServiceImplTest {
     	
         Long issueId = null;
         
+        //Throws exception
         Assertions.assertThrows(InvalidInputException.class, () -> {
         	issueService.getIssueById(issueId);
         });
         
+    }
+
+    private Issue getIssue(){
+
+        Issue issue = new Issue();
+        issue.setId(1L);
+        issue.setTitle("Test Issue");
+        issue.setDescription("This is a test issue");
+        issue.setSeverity(Severity.LOW);
+        issue.setResponsible("Developer");
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUser");
+        user.setEmail("varshac.bbs@gmail.com");
+        
+        Role role = new Role();
+        role.setId(1);
+        role.setName(ERole.ROLE_USER);
+        Set<Role> set = new HashSet<> ();
+        set.add(role);
+        user.setRoles(set);
+        
+        issue.setUser(user);
+
+        return issue;
     }
 }
